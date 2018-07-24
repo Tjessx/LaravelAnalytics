@@ -1,0 +1,26 @@
+{
+    "name": "bertbijnens/laravel-analytics",
+    "description": "A Laraval analytics tool to read, calculate and display incomming and outgoing network requests",
+    "type": "laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bert Bijnens",
+            "email": "bert.bijnens@hotmail.be"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "pusher/pusher-php-server": "~3.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BertBijnens\\LaravelAnalytics\\LaravelAnalyticsServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    }
+}
