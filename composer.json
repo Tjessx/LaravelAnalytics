@@ -13,6 +13,11 @@
     "require": {
         "pusher/pusher-php-server": "~3.0"
     },
+    "autoload": {
+        "psr-4": {
+            "BertBijnens\\LaravelAnalytics\\": "src/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
