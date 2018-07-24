@@ -12,7 +12,7 @@ class ResponseBag {
     public $content;
     public $status;
 
-    public static function fromResponse(Response $response, RequestBag $requestBag) {
+    public static function fromResponse($response, RequestBag $requestBag) {
 
         $responseBag = new ResponseBag();
 
