@@ -138,6 +138,10 @@
 
             background-color: white;
             box-shadow: 0 1px 3px -1px rgb(197, 197, 197);
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .sections .section {
@@ -700,10 +704,11 @@
     }
 
     function fillTemplateRequest(request) {
+
         $('#sidebar-content').append(Mustache.render(templates.request, {
             id: request.id,
             method: request.server.REQUEST_METHOD,
-            uri: request.server.REQUEST_URI,
+            uri: request.server.REQUEST_URI.substr(0, request.server.REQUEST_URI.indexOf('?')),
             time: request.server.REQUEST_TIME,
             code: '...'
         }));
@@ -744,6 +749,43 @@
         return r;
     }
 
+    function syntaxHighlight(json) {
+        var build = '<pre>';
+
+        build += json
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span style="display: inline-block;" class="' + cls + '">' + match + '</span>';
+            });
+
+        build += '</pre>';
+
+        build += '<style>' +
+        'pre { padding: 5px; margin: 5px; }\n' +
+        '.string { color: green; }\n' +
+        '.number { color: darkorange; }\n' +
+        '.boolean { color: blue; }\n' +
+        '.null { color: magenta; }\n' +
+        '.key { color: red; }\n' +
+        '\n</style>';
+
+        return build;
+    }
+
     function select(request, response) {
 
         console.log('CLICKED', request, response);
@@ -758,16 +800,27 @@
             server: request.server
         }));
 
-        $('.content .content-response').html(Mustache.render(templates.content_response, {
-            id: response.request,
-            headers: objs2list(response.headers),
-            content: response.content,
-            response_message: 'Response looks ok'
-        }));
+        if(typeof response !== "undefined") {
+            $('.content .content-response').html(Mustache.render(templates.content_response, {
+                id: response.request,
+                headers: objs2list(response.headers),
+                content: response.content,
+                response_message: 'Response looks ok'
+            }));
 
-        var frame = $('<iframe frameBorder="0"></iframe>').attr('src', 'data:text/html,' + encodeURIComponent(response.content));
+            if(typeof response.headers !== "undefined" && typeof response.headers['content-type'] !== "undefined" && response.headers['content-type'][0] === 'application/json') {
+                json = JSON.parse(response.content);
+                json = JSON.stringify(json, undefined, 4);
 
-        $('.content .content-response .section-content').html(frame);
+                if(typeof json !== "undefined" && json.length > 0) {
+                    response.content = syntaxHighlight(json);
+                }
+            }
+
+            frame = $('<iframe frameBorder="0"></iframe>').attr('src', 'data:text/html,' + encodeURIComponent(response.content));
+
+            $('.content .content-response .section-content').html(frame);
+        }
 
         load_section_events()
     }
