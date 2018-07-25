@@ -27,7 +27,7 @@ class LaravelAnalyticsServiceProvider extends ServiceProvider
         }
 
         $this->loadRoutesFrom(__DIR__. '/routes/routes.php');
-        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+        //$this->loadMigrationsFrom(__DIR__ . '/migrations');
         $this->loadViewsFrom(__DIR__ . '/views', 'analytics');
 
         $this->app['Illuminate\Contracts\Http\Kernel']->prependMiddleware(LogMiddleware::class);
