@@ -42,7 +42,7 @@ class RequestBag {
         $this->request = $serverData;
     }
     public function setFiles(array $serverData) {
-        $this->files = $serverData;
+        $this->files = array_keys($serverData);
     }
 
     public function generateId() {
